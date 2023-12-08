@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
-#import openai
+from openai import OpenAI
 
 archivo = None
 ventana = tk.Tk()
@@ -60,6 +60,40 @@ menu_seleccion.pack(padx=20, pady=20)  # Añadir menú de selección al frame_de
 
 
 frame_derecho_abajo = tk.Frame(frame_derecho, bg="black", width=700, height=730, relief=tk.GROOVE, bd=2)
+
+def enviar_mensaje():
+    mensaje_usuario = campo_entrada.get()  # Obtener el texto del campo de entrada
+    if mensaje_usuario:
+        # Hacer la solicitud a la API de OpenAI
+        client = OpenAI(api_key="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")
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": mensaje_usuario
+                }
+            ],
+            model="gpt-3.5-turbo"
+        )
+        # Obtener la respuesta de ChatGPT
+        respuesta_chatgpt = chat_completion.choices[0].message.content
+
+        # Mostrar la conversación en el área de respuesta
+        area_respuesta.insert(tk.END, f"Usuario: {mensaje_usuario}\n")
+        area_respuesta.insert(tk.END, f"ChatGPT: {respuesta_chatgpt}\n\n")
+
+# Crear campo de entrada para el usuario
+campo_entrada = tk.Entry(frame_derecho_abajo, width=50)
+campo_entrada.pack(padx=20, pady=10)
+
+# Crear área para mostrar las respuestas de ChatGPT
+area_respuesta = tk.Text(frame_derecho_abajo, height=20, width=50)
+area_respuesta.pack(padx=20, pady=10)
+
+# Botón para enviar mensaje a ChatGPT
+boton_enviar = tk.Button(frame_derecho_abajo, text="Enviar", command=enviar_mensaje)
+boton_enviar.pack(padx=20, pady=10)
+
 
 frame_derecho_arriba.pack(fill=tk.BOTH, expand=True)
 frame_derecho_abajo.pack(fill=tk.BOTH, expand=True)
